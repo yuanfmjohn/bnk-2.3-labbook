@@ -1,0 +1,24 @@
+global:
+  imagePullSecrets:
+  - name: far-pull-secret
+
+ServiceIPFamily: ipv4
+
+image:
+  repository: repo.f5.com/images
+  pullPolicy: IfNotPresent
+
+containerPlatform: Generic
+
+# Resources for the f5-lifecycle-operator container.
+resources:
+  limits:
+    cpu: "0.5"
+    memory: "512Mi"
+  requests:
+    cpu: "0.25"
+    memory: "256Mi"
+
+affinity: {}
+
+tolerations: []

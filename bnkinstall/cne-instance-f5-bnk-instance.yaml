@@ -1,0 +1,67 @@
+apiVersion: k8s.f5.com/v1
+kind: CNEInstance
+metadata:
+  name: f5-bnk-instance
+spec:
+  product:
+    gatewayAPI: true
+    type: BNK
+  manifestVersion: 2.3.0-3.2598.3-0.0.170
+  wholeCluster: true
+  dpu:
+    enabled: false 
+  telemetry:
+    loggingSubsystem:
+      enabled: true
+    metricSubsystem:
+      enabled: true
+  certificate:
+    clusterIssuer: f5-cne-internal-ca
+  deploymentSize: Small 
+  registry:
+    uri: repo.f5.com
+    imagePullSecrets:
+    - name: far-pull-secret
+    imagePullPolicy: IfNotPresent
+  networkAttachments:
+  - external-net
+  - internal-net
+  - cnf-net
+  storageClassName: nfs
+  dynamicRouting:
+    enabled: true
+  # AFM
+  firewallACL:
+    enabled: true
+  pseudoCNI:
+    enabled: true
+  # Core dump files
+  coreCollection:
+    enabled: true
+  advanced:
+    envDiscovery:
+      enabled: false 
+      stopOnFail: true
+      runAfterSuccess: true
+    cneController:
+      env:
+      - name: "GSLB_DATACENTER_NAME"
+        value: "DC1"
+    demoMode:
+      enabled: true
+    maintenanceMode:
+      enabled: false
+    tmm:
+      env:
+      - name: TMM_CALICO_ROUTER
+        value: default
+      - name: TMM_DEFAULT_MTU
+        value: "9000"
+      - name: ZEBOS_STATE
+        value: legacy
+      - name: "TMM_MAPRES_ADDL_VETHS_ON_DP"
+        value: "TRUE"
+    pseudoCNI:
+      env:
+      - name: EXCLUDE_CIDR
+        value: "10.1.1.0/8,10.1.200.0/24,10.1.210.0/24,10.1.220.0/24,10.96.0.0/12,192.168.0.0/16"

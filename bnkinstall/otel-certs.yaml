@@ -1,0 +1,35 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: external-otelsvr
+spec:
+    commonName: otel.cluster.local
+    secretName: external-otelsvr-secret
+    issuerRef:
+        name: f5-cne-internal-ca
+        kind: ClusterIssuer
+    duration: 8640h
+    privateKey:
+        rotationPolicy: Always
+        encoding: PKCS1
+        algorithm: RSA
+        size: 4096
+    revisionHistoryLimit: 10
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: external-f5ingotelsvr
+spec:
+    commonName: otel.cluster.local
+    secretName: external-f5ingotelsvr-secret
+    issuerRef:
+        name: f5-cne-internal-ca
+        kind: ClusterIssuer
+    duration: 8640h
+    privateKey:
+        rotationPolicy: Always
+        encoding: PKCS1
+        algorithm: RSA
+        size: 4096
+    revisionHistoryLimit: 10
