@@ -18,7 +18,10 @@ list of all base files for installation
 2. 1 env.sh script for env varialbeble in installation
 3. 2 scriptbash scripts from BNK site for manifest chart and version extraction as well as 
 4. 1 bash script for far-pull-secret creation
-5. 3 BNK yamls for 1) otel certs creation; 2) f5- flo instlaallationallation; 3) f5 cne instance installation
+5. 3 BNK yamls for 
+   - 1) otel certs creation; 
+   - 2) f5-flo installation; 
+   - 3) f5 cne instance installation
 6. 1 BNK yaml for final step of jwt license creation.
 ### enable env variable that will be used throughout installation.
 ```bash
