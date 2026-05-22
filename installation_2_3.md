@@ -20,6 +20,12 @@ list of all base files for installation
 4. 1 bash script for far-pull-secret creation
 5. 3 BNK yamls for 1) otel certs creation; 2) f5- flo instlaallationallation; 3) f5 cne instance installation
 6. 1 BNK yaml for final step of jwt license creation.
+### enable env variable that will be used throughout installation.
+```bash
+$ source ./env.sh
+$ echo CNE_REPO
+$ repo.f5.com
+```
 ## First lets load the install the preconditions in k8s.
 ### a prerequiesite is to install cert-manager v1.19.4
 ```bash
