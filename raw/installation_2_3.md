@@ -11,6 +11,7 @@
 -rw-rw-r--  1 ubuntu ubuntu  664 May 21 03:37 k8s-macvlan-nad.yaml
 -rw-rw-r--  1 ubuntu ubuntu  343 May 21 03:44 k8s-nfs-storageclass.yaml
 -rw-rw-r--  1 ubuntu ubuntu  824 May 21 03:35 otel-certs.yaml
+```
 #list of all base files for installation
 #2 k8s yamls for nfs and macvlan net-attach-def creation
 #1 env.sh script for env varialbeble in installation
@@ -20,11 +21,14 @@
 #41 BNK yaml for sifinal step lijwt license creation.
 #first lets load the install the preconditions in k8s.
 # a prerequiesite is to install cert-manager v1.19.4
+```console
 \$ kubectl create -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.4/cert-manager.yaml ; kubectl wait --for=condition=ready pod --all --namespace cert-manager --timeout=120s
 pod/cert-manager-cainjector-79dfb57945-ddxlt condition met
 pod/cert-manager-f48c47bd-4dvfc condition met
 pod/cert-manager-webhook-7ccb49fb7b-87r72 condition met
+```
 # once cert-manager is installed. Continue to create CNE self signed clusterissuer.
+```console
 \$ kubectl apply -f f5-cne-cluster-issuer.yaml
 \$ kubectl get clusterissuersNAME                        READY   AGE
 f5-cne-internal-ca          True    10d
@@ -46,6 +50,9 @@ allowVolumeExpansion: true
 ountOptions:
   - hard
   - nfsvers=4.0
+```
+# storageclass creation
+```console
 \$ kubectl apply -f k8s-nfs-storageclass.yaml
 \$ kubectl get storagtegeclass nfs
 NAME            PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -82,13 +89,18 @@ spec:
       "logLevel": "debug",
       "logFile": "/var/log/net-attach-internal.log"
     }'
+```
+# namespace and network creation
+```console
 \$ kubectl create namespace f5-cne-core
 \$ kubectl create namespace f5-bnk-instance
 \$ kubectl apply -f k8s-macvlan-nad.yaml -n f5-bnk-instance
 \$ kubectl get net-attach-def -n f5-bnk-instance
+```
 # 
 # Next step is to deploy Flo
 # bash script get-cne-chart-version.sh is used in all installation steps to extract the core components and has to be placed in the manifest folder.
+```console
 \$ pwd
 ~/bnkinstall/f5-bigip-k8s-manifest-2.3.0-3.2598.3-0.0.170
 # all other yamls are also moved here for simplicity
@@ -98,7 +110,9 @@ spec:
 \$ kubectl get pod -n f5-f5-cne-core
 NAME                                    READY   STATUS    RESTARTS      AGE
 f5-lifecycle-operator-889d79b7c-mmq96   1/1     Running   1 (18h ago)   2d
+```
 # next create the CWC authentication
+```console
 \$ sh cert-gen/gen_cert.sh -s=api-server -a=f5-spk-cwc.f5-cne-core.svc.cluster.local -n=1
 \$ ll | grep cwc | grep yaml-rw-rw-r-- 1 ubuntu ubuntu  5706 May 21 03:56 cwc-license-certs.yaml
 -rw-rw-r-- 1 ubuntu ubuntu  5657 May 21 03:56 cwc-license-client-certs.yaml
@@ -186,6 +200,9 @@ spec:
       env:
       - name: EXCLUDE_CIDR
         value: "10.1.1.0/8,10.1.200.0/24,10.1.210.0/24,10.1.220.0/24,10.96.0.0/12,192.168.0.0/16"
+```
+# deploy CNEinstance
+```console
 \$ kubectl apply -f cne-instance-${CNE_INSTANCE_NAMESPACE}.yaml --namespace $CNE_INSTANCE_NAMESPACE
 cneinstance.k8s.f5.com/f5-bnk-instance created
 #check resources are created and installed
@@ -215,7 +232,9 @@ f5-tmm-788k2                         4/7     Running   0             10s
 \$ kubect get cneinstance f5-bnk-instance
 NAME              AGE
 f5-bnk-instance   52s
+```
 #next apply the license.
+```console
 \$ cat f5-cne-cluster-license.yaml 
 apiVersion: k8s.f5net.com/v1
 kind: License
@@ -225,9 +244,11 @@ spec:
   operationMode: "connected"
   jwt: "xxxxx"
 \$ kubectl apply -f f5-cne-cluster-license.yaml -n f5-cne-core
+```
 # Wait for a few mins for it to finish the licensing process
+```console
 \$ kubectl get license -n f5-cne-core
 NAME                     STATE    MODE        ENTITLEMENT   ENVIRONMENT   EXPIRY                 DIGITALASSETID                         AGE
 f5-cne-cluster-license   Active   connected   eval          production    2026-06-10T06:46:57Z   eda1e85c-037d-4255-a923-847f8e289218   9d
-# the installation steps are now complete.
 ```
+# the installation steps are now complete.
